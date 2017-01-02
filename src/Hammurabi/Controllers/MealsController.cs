@@ -22,7 +22,13 @@ namespace Hammurabi.Controllers
         // GET: Meals
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Meals.ToListAsync());
+            //return View(await _context.Meals.ToListAsync());
+
+            return View(await _context.Meals
+                        .Include(s => s.MealIngredients)
+                            .ThenInclude(e => e.Ingredient)
+                        .AsNoTracking()
+                        .ToListAsync());
         }
 
         // GET: Meals/Details/5
@@ -33,7 +39,12 @@ namespace Hammurabi.Controllers
                 return NotFound();
             }
 
-            var meal = await _context.Meals.SingleOrDefaultAsync(m => m.ID == id);
+            var meal = await _context.Meals
+                .Include(s => s.MealIngredients)
+                    .ThenInclude(e => e.Ingredient)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.ID == id);
+
             if (meal == null)
             {
                 return NotFound();

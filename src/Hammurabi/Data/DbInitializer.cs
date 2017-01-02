@@ -35,7 +35,7 @@ namespace Hammurabi.Models
             var ingredients = new Ingredient[]
             {
             new Ingredient{IngredientID=101,Name="Cheese",AddPrice=3,},
-            new Ingredient{IngredientID=202,Name="Oregano",AddPrice=3,},
+            new Ingredient{IngredientID=102,Name="Oregano",AddPrice=3,},
             new Ingredient{IngredientID=201,Name="Tomato",AddPrice=3,},
             new Ingredient{IngredientID=202,Name="Onion",AddPrice=2,},
             new Ingredient{IngredientID=203,Name="Pepper",AddPrice=2,},

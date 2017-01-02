@@ -28,6 +28,26 @@
         <dd>
             @Html.DisplayFor(model => model.Price)
         </dd>
+
+        <dt>
+            @Html.DisplayName("Ingredient List:")
+        </dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>List:</th>
+                </tr>
+                @foreach (var item in Model.MealIngredients)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ingredient.Name)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+
     </dl>
 </div>
 <div>

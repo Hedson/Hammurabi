@@ -21,6 +21,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.MealIngredients)*@
+                @Html.DisplayName("Ingredients List:")
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,6 +39,18 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <table class="table">
+                    @foreach (var item2 in item.MealIngredients)
+                         {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor( modelItem => item2.Ingredient.Name)
+                                </td>
+                            </tr>
+                        }
+                </table>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
