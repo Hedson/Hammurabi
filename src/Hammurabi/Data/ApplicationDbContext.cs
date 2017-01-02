@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Hammurabi.Models;
 
-namespace Hammurabi.Data
+namespace Hammurabi.Models
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

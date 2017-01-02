@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Hammurabi.Data.Migrations
+namespace Hammurabi.Models.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
