@@ -3,6 +3,16 @@
 @{
     ViewData["Title"] = "Index";
 }
+<style>
+    body {
+        @*Add background for this site - image - not necessary, i replace it by place this background in _layout shared cshtml file*@ 
+        @*background: url('@Url.Content("~/images/meal.jpg")'); *@;
+    }
+    .table{
+      @*Add background color(gray) and opacity 50% for table*@
+      background-color:rgba(194,194,194,0.5);    
+    }
+</style>
 
 <h2>Index</h2>
 
@@ -48,7 +58,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <table class="table">
+                <table class="table2">
                     @*Code for display each item of Ingredient list for each Meal. Ingredients are order by IngredientID.*@
                     @foreach (var item2 in item.MealIngredients.OrderBy(a => a.IngredientID))
                          {
