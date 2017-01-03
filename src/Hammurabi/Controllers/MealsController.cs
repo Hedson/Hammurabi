@@ -19,17 +19,54 @@ namespace Hammurabi.Controllers
             _context = context;    
         }
 
-        // GET: Meals
-        public async Task<IActionResult> Index()
+        // GET: Meals. Add sorting Functionality: Preparation Time or Price.
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
+            ViewData["TimeSortParm"] = sortOrder == "Time" ? "Time_desc" : "Time";
+            ViewData["PriceSortParm"] = sortOrder == "Price" ? "Price_desc" : "Price";
+            ViewData["CurrentFilter"] = searchString;
+
             //return View(await _context.Meals.ToListAsync());
 
-            var mealas = _context.Meals
-                        .Include(s => s.MealIngredients)
-                            .ThenInclude(e => e.Ingredient)
-                        .OrderBy(s => s.Price);
+            var meals = from m in _context.Meals
+                         select m;
 
-            return View(await mealas
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                meals = meals.Where(s => s.Name.Contains(searchString));
+            }
+            //.OrderBy(s => s.Price);
+            switch (sortOrder)
+            {
+                case "Time_desc":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderByDescending(s => s.PreparationTime);
+                    break;
+                case "Time":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderBy(s => s.PreparationTime);
+                    break;
+                case "Price_desc":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderByDescending(s => s.Price);
+                    break;
+
+                default:
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderBy(s => s.Price);
+                    break;
+            }
+
+
+            return View(await meals
                         .AsNoTracking()
                         .ToListAsync());
         }
@@ -161,5 +198,6 @@ namespace Hammurabi.Controllers
         {
             return _context.Meals.Any(e => e.ID == id);
         }
+
     }
 }

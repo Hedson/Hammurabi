@@ -27,6 +27,13 @@ namespace Hammurabi.Controllers
             return View();
         }
 
+        public IActionResult Delivery()
+        {
+            ViewData["Message"] = "Map where we deliver meals for free";
+
+            return View();
+        }
+
         public IActionResult Error()
         {
             return View();

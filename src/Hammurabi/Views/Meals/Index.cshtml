@@ -9,6 +9,17 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">Back to List</a>
+        </p>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -20,10 +31,12 @@
                 @Html.DisplayName("Ingredients List:")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PreparationTime)
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.TimeSortParm">@Html.DisplayNameFor(model => model.PreparationTime)</a>
+                @*@Html.DisplayNameFor(model => model.PreparationTime)*@
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.PriceSortParm">@Html.DisplayNameFor(model => model.Price)</a>
+                @*@Html.DisplayNameFor(model => model.Price)*@
             </th>
             <th></th>
         </tr>
