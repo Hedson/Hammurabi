@@ -24,9 +24,12 @@ namespace Hammurabi.Controllers
         {
             //return View(await _context.Meals.ToListAsync());
 
-            return View(await _context.Meals
+            var mealas = _context.Meals
                         .Include(s => s.MealIngredients)
                             .ThenInclude(e => e.Ingredient)
+                        .OrderBy(s => s.Price);
+
+            return View(await mealas
                         .AsNoTracking()
                         .ToListAsync());
         }

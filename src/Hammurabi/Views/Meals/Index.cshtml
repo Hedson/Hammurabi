@@ -16,14 +16,14 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
+                @*@Html.DisplayNameFor(model => model.MealIngredients)*@
+                @Html.DisplayName("Ingredients List:")
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.PreparationTime)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.MealIngredients)*@
-                @Html.DisplayName("Ingredients List:")
             </th>
             <th></th>
         </tr>
@@ -35,14 +35,9 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PreparationTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
                 <table class="table">
-                    @foreach (var item2 in item.MealIngredients)
+                    @*Code for display each item of Ingredient list for each Meal. Ingredients are order by IngredientID.*@
+                    @foreach (var item2 in item.MealIngredients.OrderBy(a => a.IngredientID))
                          {
                             <tr>
                                 <td>
@@ -51,6 +46,12 @@
                             </tr>
                         }
                 </table>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PreparationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

@@ -37,7 +37,8 @@
                 <tr>
                     <th>List:</th>
                 </tr>
-                @foreach (var item in Model.MealIngredients)
+                @*Code for display each item of Ingredient list for each Meal. Ingredients are order by IngredientID.*@
+                @foreach (var item in Model.MealIngredients.OrderBy(a => a.IngredientID))
                 {
                     <tr>
                         <td>
