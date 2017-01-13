@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hammurabi.Data;
 using Hammurabi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hammurabi.Controllers
 {
@@ -30,6 +31,58 @@ namespace Hammurabi.Controllers
 
             var meals = from m in _context.Meals
                          select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                meals = meals.Where(s => s.Name.Contains(searchString));
+            }
+            //.OrderBy(s => s.Price);
+            switch (sortOrder)
+            {
+                case "Time_desc":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderByDescending(s => s.PreparationTime);
+                    break;
+                case "Time":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderBy(s => s.PreparationTime);
+                    break;
+                case "Price_desc":
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderByDescending(s => s.Price);
+                    break;
+
+                default:
+                    meals = meals
+                        .Include(s => s.MealIngredients)
+                         .ThenInclude(e => e.Ingredient)
+                         .OrderBy(s => s.Price);
+                    break;
+            }
+
+
+            return View(await meals
+                        .AsNoTracking()
+                        .ToListAsync());
+        }
+
+        [Authorize(Roles="Admin")]
+        public async Task<IActionResult> EditMenu(string sortOrder, string searchString)
+        {
+            ViewData["TimeSortParm"] = sortOrder == "Time" ? "Time_desc" : "Time";
+            ViewData["PriceSortParm"] = sortOrder == "Price" ? "Price_desc" : "Price";
+            ViewData["CurrentFilter"] = searchString;
+
+            //return View(await _context.Meals.ToListAsync());
+
+            var meals = from m in _context.Meals
+                        select m;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -102,6 +155,7 @@ namespace Hammurabi.Controllers
         // POST: Meals/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Name,PreparationTime,Price")] Meal meal)
@@ -116,6 +170,7 @@ namespace Hammurabi.Controllers
         }
 
         // GET: Meals/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -134,6 +189,7 @@ namespace Hammurabi.Controllers
         // POST: Meals/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PreparationTime,Price")] Meal meal)
@@ -167,6 +223,7 @@ namespace Hammurabi.Controllers
         }
 
         // GET: Meals/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -183,7 +240,9 @@ namespace Hammurabi.Controllers
             return View(meal);
         }
 
+
         // POST: Meals/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
