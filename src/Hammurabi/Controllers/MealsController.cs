@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hammurabi.Data;
 using Hammurabi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Hammurabi.Models.RestaurantViewModels;
 
 namespace Hammurabi.Controllers
 {
@@ -147,8 +148,35 @@ namespace Hammurabi.Controllers
         }
 
         // GET: Meals/Create
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
+
+        //// POST: Meals/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[Authorize(Roles = "Admin")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("ID,Name,PreparationTime,Price")] Meal meal)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(meal);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction("EditMenu");
+        //    }
+        //    return View(meal);
+        //}
+
+
+        // GET: Meals/Create
         public IActionResult Create()
         {
+            var meal = new Meal();
+            meal.MealIngredients = new List<MealIngredient>();
+            PopulateAssignedIngredientData(meal);
             return View();
         }
 
@@ -158,8 +186,19 @@ namespace Hammurabi.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,PreparationTime,Price")] Meal meal)
+        public async Task<IActionResult> Create([Bind("Name,PreparationTime,Price")] Meal meal, string[] selectedIngredients)
         {
+
+            if (selectedIngredients != null)
+            {
+                meal.MealIngredients = new List<MealIngredient>();
+                foreach (var ingredient in selectedIngredients)
+                {
+                    var ingredientToAdd = new MealIngredient { MealID = meal.ID, IngredientID = int.Parse(ingredient) };
+                    meal.MealIngredients.Add(ingredientToAdd);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(meal);
@@ -168,6 +207,8 @@ namespace Hammurabi.Controllers
             }
             return View(meal);
         }
+
+
 
         // GET: Meals/Edit/5
         [Authorize(Roles = "Admin")]
@@ -178,49 +219,184 @@ namespace Hammurabi.Controllers
                 return NotFound();
             }
 
-            var meal = await _context.Meals.SingleOrDefaultAsync(m => m.ID == id);
+            var meal = await _context.Meals
+                .Include(i => i.MealIngredients)//
+                    .ThenInclude(i => i.Ingredient)//
+                .AsNoTracking()//
+                .SingleOrDefaultAsync(m => m.ID == id);
             if (meal == null)
             {
                 return NotFound();
             }
+            PopulateAssignedIngredientData(meal);//
             return View(meal);
         }
 
-        // POST: Meals/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //Method for httpget action:
+        private void PopulateAssignedIngredientData(Meal meal)
+        {
+            var allIngredients = _context.Ingredients;
+            var mealIngredients = new HashSet<int>(meal.MealIngredients.Select(c => c.Ingredient.IngredientID));
+            var viewModel = new List<AssignedIngredientData>();
+            foreach(var ingredient in allIngredients)
+            {
+                viewModel.Add(new AssignedIngredientData
+                {
+                    IngredientID = ingredient.IngredientID,
+                    Name = ingredient.Name,
+                    Assigned = mealIngredients.Contains(ingredient.IngredientID)
+                });
+            }
+            ViewData["Ingredients"] = viewModel;
+        }
+
+
+
+
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PreparationTime,Price")] Meal meal)
+        public async Task<IActionResult> Edit(int? id, string[] selectedIngredients)
         {
-            if (id != meal.ID)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var mealToUpdate = await _context.Meals
+                .Include(i => i.MealIngredients)
+                    .ThenInclude(i => i.Ingredient)
+                .SingleOrDefaultAsync(m => m.ID == id);
+
+            if (await TryUpdateModelAsync<Meal>(
+                mealToUpdate,
+                "",
+                i => i.Name, i => i.Price, i => i.PreparationTime))
             {
+
+                UpdateMealIngredients(selectedIngredients, mealToUpdate);
+
                 try
                 {
-                    _context.Update(meal);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!MealExists(meal.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
                 return RedirectToAction("EditMenu");
             }
-            return View(meal);
+            return View(mealToUpdate);
         }
+
+
+        private void UpdateMealIngredients(string[] selectedIngredients, Meal mealToUpdate)
+        {
+            if (selectedIngredients == null)
+            {
+                mealToUpdate.MealIngredients = new List<MealIngredient>();
+                return;
+            }
+
+            var selectedIngredientsHS = new HashSet<string>(selectedIngredients);
+            var mealsIngredients = new HashSet<int>
+                (mealToUpdate.MealIngredients.Select(c => c.Ingredient.IngredientID));
+            foreach (var ingredient in _context.Ingredients)    // tutaj by³ bl¹d - zamiast tablicy Ingredients 
+                //by³o _context.MealIngredients przez co dodawa³o po kilka elementó(tyle ile akurat bylo w tablicy MealIngredient danego sk³adnika). Teraz dzia³a cacy :)
+            {
+                if (selectedIngredientsHS.Contains(ingredient.IngredientID.ToString()))
+                {
+                    if (!mealsIngredients.Contains(ingredient.IngredientID))
+                    {
+                        mealToUpdate.MealIngredients.Add(new MealIngredient { MealID = mealToUpdate.ID, IngredientID = ingredient.IngredientID });
+                    }
+                }
+                else
+                {
+                    if (mealsIngredients.Contains(ingredient.IngredientID))
+                    {
+                        MealIngredient mealToRemove = mealToUpdate.MealIngredients.SingleOrDefault(i => i.IngredientID == ingredient.IngredientID);
+                        _context.Remove(mealToRemove);
+                    }
+                }
+            }
+
+        }
+
+
+        //private void UpdateInstructorCourses(string[] selectedCourses, Meal instructorToUpdate)
+        //{
+        //    if (selectedCourses == null)
+        //    {
+        //        instructorToUpdate.MealIngredients = new List<MealIngredient>();
+        //        return;
+        //    }
+
+        //    var selectedCoursesHS = new HashSet<string>(selectedCourses);
+        //    var instructorCourses = new HashSet<int>
+        //        (instructorToUpdate.MealIngredients.Select(c => c.Ingredient.IngredientID));
+        //    foreach (var course in _context.MealIngredients)
+        //    {
+        //        if (selectedCoursesHS.Contains(course.IngredientID.ToString()))
+        //        {
+        //            if (!instructorCourses.Contains(course.IngredientID))
+        //            {
+        //                instructorToUpdate.MealIngredients.Add(new MealIngredient { MealID = instructorToUpdate.ID, IngredientID = course.IngredientID });
+        //            }
+        //        }
+        //        else
+        //        {
+
+        //            if (instructorCourses.Contains(course.IngredientID))
+        //            {
+        //                MealIngredient courseToRemove = instructorToUpdate.MealIngredients.SingleOrDefault(i => i.IngredientID == course.IngredientID);
+        //                _context.Remove(courseToRemove);
+        //            }
+        //        }
+        //    }
+        //}
+
+
+
+        // POST: Meals/Edit/5
+        //  To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[Authorize(Roles = "Admin")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PreparationTime,Price")] Meal meal)
+        //{
+        //    if (id != meal.ID)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(meal);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!MealExists(meal.ID))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction("EditMenu");
+        //    }
+        //    return View(meal);
+        //}
 
         // GET: Meals/Delete/5
         [Authorize(Roles = "Admin")]

@@ -38,11 +38,11 @@
                 @Html.DisplayName("Ingredients List:")
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.TimeSortParm">@Html.DisplayNameFor(model => model.PreparationTime)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.TimeSortParm">@Html.DisplayNameFor(model => model.PreparationTime) (min)</a>
                 @*@Html.DisplayNameFor(model => model.PreparationTime)*@
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.PriceSortParm">@Html.DisplayNameFor(model => model.Price)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.PriceSortParm">@Html.DisplayNameFor(model => model.Price) ($)</a>
                 @*@Html.DisplayNameFor(model => model.Price)*@
             </th>
             <th></th>

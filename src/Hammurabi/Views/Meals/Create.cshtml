@@ -32,6 +32,41 @@
                 <span asp-validation-for="Price" class="text-danger" />
             </div>
         </div>
+
+
+        
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <table>
+                    <tr>
+                        @{
+                            int cnt = 0;
+                            List<Hammurabi.Models.RestaurantViewModels.AssignedIngredientData> ingredients = ViewBag.Ingredients;
+
+                            foreach (var ingredient in ingredients)
+                            {
+                                if (cnt++ % 3 == 0)
+                                {
+                                    @:</tr><tr>
+                                }
+                                @: <td>
+                                    <input type="checkbox"
+                                           name="selectedIngredients"
+                                           value="@ingredient.IngredientID" @*@*TO TUTAJ BYL PROBEM PODCZAS PRZEKAWYWANIA WARTOSI INPUTA DO KONTROLERA!*@*@
+                                           @(Html.Raw(ingredient.Assigned ? "checked=\"checked\"" : "")) />
+                                    @ingredient.IngredientID @:  @ingredient.Name
+                                    @:</td>
+                    }
+                            @:</tr>
+                        }
+                    </table>
+                </div>
+            </div>
+
+
+
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
