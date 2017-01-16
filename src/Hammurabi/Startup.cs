@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Hammurabi.Models;
 using Hammurabi.Services;
 using Hammurabi.Data;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace Hammurabi
 {
@@ -59,6 +61,20 @@ namespace Hammurabi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, RestaurantContext context)
         {
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en"),
+                new CultureInfo("en-US"),
+                new CultureInfo("es"),
+                new CultureInfo("es-ES")
+            };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 

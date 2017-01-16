@@ -164,7 +164,7 @@ namespace Hammurabi.Controllers
             {
                 _context.Add(meal);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("EditMenu");
             }
             return View(meal);
         }
@@ -217,7 +217,7 @@ namespace Hammurabi.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("EditMenu");
             }
             return View(meal);
         }
@@ -250,7 +250,7 @@ namespace Hammurabi.Controllers
             var meal = await _context.Meals.SingleOrDefaultAsync(m => m.ID == id);
             _context.Meals.Remove(meal);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("EditMenu");
         }
 
         private bool MealExists(int id)
