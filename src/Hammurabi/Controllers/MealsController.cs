@@ -22,11 +22,24 @@ namespace Hammurabi.Controllers
         }
 
         // GET: Meals. Add sorting Functionality: Preparation Time or Price.
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? page)
         {
+            // Added paging functionality for Index action(for standard user - Admin have one list on product, without paging).
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["TimeSortParm"] = sortOrder == "Time" ? "Time_desc" : "Time";
             ViewData["PriceSortParm"] = sortOrder == "Price" ? "Price_desc" : "Price";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
             ViewData["CurrentFilter"] = searchString;
+
 
             //return View(await _context.Meals.ToListAsync());
 
@@ -67,10 +80,13 @@ namespace Hammurabi.Controllers
                     break;
             }
 
+            int pageSize = 5;
 
-            return View(await meals
-                        .AsNoTracking()
-                        .ToListAsync());
+            return View(await PaginatedList<Meal>.CreateAsync(meals.AsNoTracking(), page ?? 1, pageSize)); //with paging functionality
+
+            //return View(await meals
+            //            .AsNoTracking()
+            //            .ToListAsync());
         }
 
         [Authorize(Roles="Admin")]
