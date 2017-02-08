@@ -17,7 +17,10 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+
+        <li><a asp-action="Create">Create new meal</a></li>
+        <li><a asp-area="" asp-controller="Ingredients" asp-action="Index">Edit Ingredients</a></li>
+
 </p>
 
 <form asp-action="Index" method="get">

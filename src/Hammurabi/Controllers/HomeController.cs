@@ -34,6 +34,13 @@ namespace Hammurabi.Controllers
             return View();
         }
 
+        public IActionResult Career()
+        {
+            ViewData["Message"] = "You can work in our restaurant";
+
+            return View();
+        }
+
         public IActionResult Error()
         {
             return View();

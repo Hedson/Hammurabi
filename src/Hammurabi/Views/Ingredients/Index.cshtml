@@ -1,0 +1,52 @@
+@model IEnumerable<Hammurabi.Models.Ingredient>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    body {
+        @*Add background for this site - image - not necessary, i replace it by place this background in _layout shared cshtml file*@ @*background: url('@Url.Content("~/images/meal.jpg")');
+        *@;
+    }
+
+    .table {
+        @*Add background color(gray) and opacity 50% for table*@ background-color:rgba(194,194,194,0.5);
+    }
+</style>
+
+<h2>Index</h2>
+
+<p>
+    <li><a asp-action="Create">Create new ingredient</a></li>
+    <li><a asp-area="" asp-controller="Meals" asp-action="EditMenu">Back to edit menu</a></li>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AddPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IngredientID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IngredientID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IngredientID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
