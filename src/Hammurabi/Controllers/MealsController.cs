@@ -163,29 +163,6 @@ namespace Hammurabi.Controllers
             return View(meal);
         }
 
-        // GET: Meals/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //// POST: Meals/Create
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("ID,Name,PreparationTime,Price")] Meal meal)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(meal);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction("EditMenu");
-        //    }
-        //    return View(meal);
-        //}
-
 
         // GET: Meals/Create
         public IActionResult Create()
@@ -197,8 +174,6 @@ namespace Hammurabi.Controllers
         }
 
         // POST: Meals/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -343,76 +318,6 @@ namespace Hammurabi.Controllers
 
         }
 
-
-        //private void UpdateInstructorCourses(string[] selectedCourses, Meal instructorToUpdate)
-        //{
-        //    if (selectedCourses == null)
-        //    {
-        //        instructorToUpdate.MealIngredients = new List<MealIngredient>();
-        //        return;
-        //    }
-
-        //    var selectedCoursesHS = new HashSet<string>(selectedCourses);
-        //    var instructorCourses = new HashSet<int>
-        //        (instructorToUpdate.MealIngredients.Select(c => c.Ingredient.IngredientID));
-        //    foreach (var course in _context.MealIngredients)
-        //    {
-        //        if (selectedCoursesHS.Contains(course.IngredientID.ToString()))
-        //        {
-        //            if (!instructorCourses.Contains(course.IngredientID))
-        //            {
-        //                instructorToUpdate.MealIngredients.Add(new MealIngredient { MealID = instructorToUpdate.ID, IngredientID = course.IngredientID });
-        //            }
-        //        }
-        //        else
-        //        {
-
-        //            if (instructorCourses.Contains(course.IngredientID))
-        //            {
-        //                MealIngredient courseToRemove = instructorToUpdate.MealIngredients.SingleOrDefault(i => i.IngredientID == course.IngredientID);
-        //                _context.Remove(courseToRemove);
-        //            }
-        //        }
-        //    }
-        //}
-
-
-
-        // POST: Meals/Edit/5
-        //  To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PreparationTime,Price")] Meal meal)
-        //{
-        //    if (id != meal.ID)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(meal);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!MealExists(meal.ID))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction("EditMenu");
-        //    }
-        //    return View(meal);
-        //}
 
         // GET: Meals/Delete/5
         [Authorize(Roles = "Admin")]
